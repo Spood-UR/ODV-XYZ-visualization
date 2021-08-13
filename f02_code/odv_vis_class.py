@@ -30,14 +30,30 @@ class odv_vis:
         x = x - 360
         z[z == nan_value] = np.nan
 
-        x_diff = []
-        y_diff = []
+        x_diff = np.ones(len(x)) * np.nan
+        y_diff = np.ones(len(x)) * np.nan
         for i in range(len(x)):
             if i > 0:
-                x_diff.append(x[i - 1] - x[i])
-                y_diff.append(y[i - 1] - y[i])
-        self.x_res = np.abs(np.amin(x_diff))
-        self.y_res = np.abs(np.amin(y_diff))
+                x_diff[i] = x[i - 1] - x[i]
+                y_diff[i] = y[i - 1] - y[i]
+
+        x_diff[x_diff == 0] = np.nan
+        y_diff[y_diff == 0] = np.nan
+        x_diff[x_diff > 1] = np.nan
+        x_diff[x_diff < -1] = np.nan
+
+        self.x_res = np.abs(np.nanmin(x_diff))
+        self.y_res = np.abs(np.nanmin(y_diff))
+
+        # if np.nanmin(x_diff) < 0:
+        #     self.x_res = np.abs(np.nanmin(x_diff * -1))
+        # else:
+        #     self.x_res = np.abs(np.nanmin(x_diff))
+        #
+        # if np.nanmin(y_diff) < 0:
+        #     self.y_res = np.abs(np.nanmin(y_diff * -1))
+        # else:
+        #     self.y_res = np.abs(np.nanmin(y_diff))
 
         if rinfl is None:
             self.x_rinfl = self.x_res
